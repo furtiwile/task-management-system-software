@@ -23,6 +23,13 @@ import { ILogerService } from './Domain/services/ILogerService';
 import { IOTPVerificationService } from './Domain/services/IOTPVerificationService';
 import { ITokenNamingStrategy } from './Domain/strategies/ITokenNamingStrategy';
 import { ISIEMService } from './siem/Domen/services/ISIEMService';
+import { IEmailService } from './Domain/services/IEmailService';
+import { ILoginStrategy } from './Domain/services/ILoginStrategy';
+import { ISessionStore } from './Domain/services/ISessionStore';
+import { IHealthChecker } from './Domain/services/IHealthChecker';
+import { IOTPGenerator } from './Domain/services/IOTPGenerator';
+import { IJWTTokenService } from './Domain/services/IJWTTokenService';
+
 // Helpers
 import { PasswordLoginStrategy } from './Services/LoginStrategies/PasswordLoginStrategy';
 import { OtpLoginStrategy } from './Services/LoginStrategies/OtpLoginStrategy';
@@ -32,7 +39,6 @@ import { OTPGenerator } from './Services/OTPServices/OTPGenerator';
 import { setLoggingLevel } from './helpers/loggingHelper';
 import { TokenNamingStrategyFactory } from './factories/TokenNamingStrategyFactory';
 
-
 // Services
 import { AuthService } from './Services/AuthenticationServices/AuthService';
 import { LogerService } from './Services/LogerServices/LogerService';
@@ -40,10 +46,9 @@ import { SessionService } from './Services/SessionServices/SessionService';
 import { EmailService } from './Services/EmailServices/EmailService';
 import { OTPVerificationService } from './Services/OTPServices/OTPVerificationService';
 import { SIEMService } from './siem/Services/SIEMService';
+
 // Controllers
 import { AuthController } from './WebAPI/controllers/AuthController';
-import { IEmailService } from './Domain/services/IEmailService';
-
 dotenv.config({ quiet: true });
 
 // Set logging level based on environment
@@ -79,31 +84,31 @@ const initLogger = new LogerService(LoggingServiceEnum.APP_SERVICE);
   const userRoleRepository: Repository<UserRole> = Db.getRepository(UserRole);
 
   // Services
-  const authLogger = new LogerService(LoggingServiceEnum.AUTH_SERVICE);
-  const emailLogger = new LogerService(LoggingServiceEnum.EMAIL_SERVICE);
-  const sessionLogger = new LogerService(LoggingServiceEnum.SESSION_SERVICE);
-  const otpVerificationLogger = new LogerService(LoggingServiceEnum.OTP_VERIFICATION_SERVICE);
-  const emailHealthCheckerLogger = new LogerService(LoggingServiceEnum.EMAIL_HEALTH_CHECKER_SERVICE);
-  const siemLogger = new LogerService(LoggingServiceEnum.SIEM);
+  const authLogger : ILogerService = new LogerService(LoggingServiceEnum.AUTH_SERVICE);
+  const emailLogger : ILogerService = new LogerService(LoggingServiceEnum.EMAIL_SERVICE);
+  const sessionLogger : ILogerService = new LogerService(LoggingServiceEnum.SESSION_SERVICE);
+  const otpVerificationLogger : ILogerService = new LogerService(LoggingServiceEnum.OTP_VERIFICATION_SERVICE);
+  const emailHealthCheckerLogger : ILogerService = new LogerService(LoggingServiceEnum.EMAIL_HEALTH_CHECKER_SERVICE);
+  const siemLogger : ILogerService = new LogerService(LoggingServiceEnum.SIEM);
 
   initLogger.log(SeverityEnum.DEBUG, "Initializing OTP and email services");
 
-  const otpGenerator = new OTPGenerator();
-  const healthChecker = new EmailHealthChecker(emailHealthCheckerLogger);
+  const otpGenerator : IOTPGenerator = new OTPGenerator();
+  const healthChecker : IHealthChecker = new EmailHealthChecker(emailHealthCheckerLogger);
+  const tokenNamingStrategy: ITokenNamingStrategy = TokenNamingStrategyFactory.createDefaultStrategy();
 
   const emailService : IEmailService = new EmailService(emailLogger, healthChecker);
-  const sessionService = new SessionService(sessionLogger);
-  const passwordStrategy = new PasswordLoginStrategy(authLogger);
-  const otpStrategy = new OtpLoginStrategy(emailService, sessionService, otpGenerator, authLogger);
+  const sessionService : ISessionStore = new SessionService(sessionLogger);
+  const passwordStrategy : ILoginStrategy  = new PasswordLoginStrategy(authLogger);
+  const otpStrategy : ILoginStrategy = new OtpLoginStrategy(emailService, sessionService, otpGenerator, authLogger);
   const authService: IAuthService = new AuthService(userRepository, passwordStrategy, otpStrategy, emailService, authLogger, userRoleRepository);
   const otpVerificationService: IOTPVerificationService = new OTPVerificationService(userRepository, emailService, sessionService, otpGenerator, otpVerificationLogger);
   const logerService: ILogerService = new LogerService(LoggingServiceEnum.APP_SERVICE);
   const siemService : ISIEMService = new SIEMService(siemLogger);
+  const jwtTokenService : IJWTTokenService = new JWTTokenService();
 
   initLogger.log(SeverityEnum.DEBUG, "Initializing token naming strategy");
 
-  const tokenNamingStrategy: ITokenNamingStrategy = TokenNamingStrategyFactory.createDefaultStrategy();
-  const jwtTokenService = new JWTTokenService();
 
   initLogger.log(SeverityEnum.DEBUG, "Setting up WebAPI controllers");
 
