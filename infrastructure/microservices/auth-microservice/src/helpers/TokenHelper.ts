@@ -32,13 +32,15 @@ export class TokenHelper {
   }
 
   /**
-   * Generates a JWT token from LoginTokenClaims
+   * Generates a custom JWT token from LoginTokenClaims
    * Returns empty string if user requires OTP
-   */
-  /**
    * Creates successful login response with custom token field name
    */
-  createLoginSuccessResponseWithCustomTokenName(userData: LoginTokenClaims, tokenName: string = "token", message: string = "Login successful", includeOTPRequired: boolean = true): AuthResponse {
+  createLoginSuccessResponseWithCustomTokenName(userData: LoginTokenClaims, 
+      tokenName: string = "token", 
+      message: string = "Login successful", 
+      includeOTPRequired: boolean = true): AuthResponse 
+    {
     if (userData.otp_required) {
       return {
         success: false,

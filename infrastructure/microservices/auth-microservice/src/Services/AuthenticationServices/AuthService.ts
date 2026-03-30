@@ -68,7 +68,7 @@ export class AuthService implements IAuthService {
 
     // In development mode, skip email/OTP and use password strategy directly
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const strategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
+    const strategy : ILoginStrategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
     const userDTO = {
       user_id: user.user_id,
       username: user.username ?? "username",
@@ -125,7 +125,7 @@ export class AuthService implements IAuthService {
 
     // In development mode, skip email/OTP and use password strategy directly
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const strategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
+    const strategy : ILoginStrategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
     const userDTO: LoginTokenClaims = {
       user_id: user.user_id,
       google_id: user.google_id || data.sub,
@@ -173,7 +173,7 @@ export class AuthService implements IAuthService {
 
     // In development mode, skip email/OTP and use password strategy directly
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const strategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
+    const strategy : ILoginStrategy = isDevelopment || !this.emailService.isAvailable ? this.passwordStrategy : this.otpStrategy;
     const userDTO = {
       user_id: user.user_id,
       username: user.username ?? "username",

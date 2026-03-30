@@ -31,7 +31,7 @@ export class JWTTokenService implements IJWTTokenService {
     }
 
     console.log('userData.image_url:', userData.image_url);
-console.log('userData:', userData);
+    console.log('userData:', userData);
     return this.generateToken({
       id: userData.user_id,
       username: userData.username,
