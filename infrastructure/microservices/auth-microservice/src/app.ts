@@ -89,7 +89,6 @@ const initLogger = new LogerService(LoggingServiceEnum.APP_SERVICE);
   const sessionLogger : ILogerService = new LogerService(LoggingServiceEnum.SESSION_SERVICE);
   const otpVerificationLogger : ILogerService = new LogerService(LoggingServiceEnum.OTP_VERIFICATION_SERVICE);
   const emailHealthCheckerLogger : ILogerService = new LogerService(LoggingServiceEnum.EMAIL_HEALTH_CHECKER_SERVICE);
-  const siemLogger : ILogerService = new LogerService(LoggingServiceEnum.SIEM);
 
   initLogger.log(SeverityEnum.DEBUG, "Initializing OTP and email services");
 
@@ -104,7 +103,7 @@ const initLogger = new LogerService(LoggingServiceEnum.APP_SERVICE);
   const authService: IAuthService = new AuthService(userRepository, passwordStrategy, otpStrategy, emailService, authLogger, userRoleRepository);
   const otpVerificationService: IOTPVerificationService = new OTPVerificationService(userRepository, emailService, sessionService, otpGenerator, otpVerificationLogger);
   const logerService: ILogerService = new LogerService(LoggingServiceEnum.APP_SERVICE);
-  const siemService : ISIEMService = new SIEMService(siemLogger);
+  const siemService : ISIEMService = new SIEMService();
   const jwtTokenService : IJWTTokenService = new JWTTokenService();
 
   initLogger.log(SeverityEnum.DEBUG, "Initializing token naming strategy");
